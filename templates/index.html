@@ -15,13 +15,14 @@
 }
 
 body {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background: linear-gradient(-45deg, #667eea, #764ba2, #6dd5ed, #2193b0);
     background-size: 400% 400%;
     animation: gradientMove 10s ease infinite;
+    padding: 40px;
 }
 
 @keyframes gradientMove {
@@ -34,7 +35,7 @@ body {
     background: white;
     padding: 40px;
     border-radius: 20px;
-    width: 400px;
+    width: 900px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     text-align: center;
     animation: fadeIn 0.6s ease;
@@ -48,6 +49,10 @@ body {
 h1 {
     margin-bottom: 25px;
     color: #333;
+}
+
+form {
+    margin-bottom: 30px;
 }
 
 select {
@@ -84,11 +89,46 @@ button:hover {
 }
 
 .algorithm-info {
-    margin-top: 15px;
+    margin-top: 10px;
     font-size: 14px;
     color: #555;
     min-height: 40px;
-    transition: 0.3s;
+}
+
+.result-section {
+    display: flex;
+    gap: 40px;
+    margin-top: 30px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.result-section img {
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.result-box {
+    text-align: left;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    width: 250px;
+}
+
+.result-box p {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.success {
+    color: green;
+    font-weight: 600;
+}
+
+.fail {
+    color: red;
+    font-weight: 600;
 }
 </style>
 </head>
@@ -96,7 +136,7 @@ button:hover {
 <body>
 
 <div class="container">
-    <h1>🧩 Maze Pathfinding</h1>
+    <h1>🧩 Maze Pathfinding Visualizer</h1>
 
     <form method="POST">
         <label>Choose Problem</label>
@@ -119,6 +159,28 @@ button:hover {
 
         <button type="submit">🚀 Find Path</button>
     </form>
+
+    {% if image %}
+    <div class="result-section">
+        
+        <div>
+            <img src="data:image/png;base64,{{ image }}" width="400">
+        </div>
+
+        <div class="result-box">
+            {% if result.success %}
+                <p class="success">✅ Path Found!</p>
+                <p><strong>Steps:</strong> {{ result.steps }}</p>
+                <p><strong>Nodes Explored:</strong> {{ result.nodes_explored }}</p>
+                <p><strong>Time:</strong> {{ "%.6f"|format(result.time) }} seconds</p>
+            {% else %}
+                <p class="fail">❌ No Path Found</p>
+            {% endif %}
+        </div>
+
+    </div>
+    {% endif %}
+
 </div>
 
 <script>
