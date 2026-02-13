@@ -1,19 +1,7 @@
-from flask import Flask, render_template, request, send_file
-import matplotlib.pyplot as plt
-import io
-
-from bfs import bfs
-from dfs import dfs
-from astar import astar
-from mazeconf import MAZES
-from visualization import draw_maze
-
-app = Flask(__name__)
-
 @app.route("/", methods=["GET", "POST"])
 def home():
     result = None
-    image = None
+    image_url = None
     
     problem = list(MAZES.keys())[0]
     algorithm = "BFS"
@@ -35,15 +23,19 @@ def home():
             result = astar(maze, start, goal)
 
         fig = draw_maze(maze, start, goal, result["path"] if result["success"] else None)
+
         img = io.BytesIO()
         fig.savefig(img, format="png")
         img.seek(0)
-        image = img
+
+        import base64
+        image_url = base64.b64encode(img.getvalue()).decode()
+
         plt.close(fig)
 
-        return send_file(image, mimetype="image/png")
-
-    return render_template("index.html", problems=MAZES.keys())
-
-if __name__ == "__main__":
-    app.run()
+    return render_template(
+        "index.html",
+        problems=MAZES.keys(),
+        result=result,
+        image=image_url
+    )
